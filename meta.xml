@@ -20,6 +20,17 @@
     <file src="Elements/ammoround.png"/>
     <file src="Elements/panel.png"/>
 
+
+
+
+    <file src="Elements/vehicle/vehicle.png"/>
+
+    <file src="Elements/vehicle/nitrobar.png"/>
+    <file src="Elements/vehicle/nitro.png"/>
+
+    <file src="Elements/vehicle/carhpbar.png"/>
+    <file src="Elements/vehicle/carhp.png"/>
+
     <file src="opensanslight.ttf"/>
 
     <oop>true</oop>

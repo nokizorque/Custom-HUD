@@ -2,7 +2,7 @@ local Width, Height = guiGetScreenSize()
 
 local Positions = {Width-10-330, 8}
 
-local Health, Armour, Oxygen = localPlayer.health, localPlayer.armor, localPlayer.oxygenLevel
+local Health, Armour, Oxygen, CarHP = 0, 0, 0, 0
 local R, G, B = 0, 177, 37
 
 --[[local Weapons = {"fist", "knuckle", "golf", "nights", "knife", "bat", "shovel", "cue", "katana", "chainsaw", 
@@ -13,6 +13,7 @@ local R, G, B = 0, 177, 37
 	"rocketla", ""}]]
 
 local AmmoPos = {8, 19}
+local CarpPos = {18, 19}
 
 local font = dxCreateFont("opensanslight.ttf", 12)
 
@@ -27,6 +28,8 @@ function enableCustomHUD()
 	setPlayerHudComponentVisible("clock", not customHUDEnabled)	
 	setPlayerHudComponentVisible("money", not customHUDEnabled)
 	setPlayerHudComponentVisible("weapon", not customHUDEnabled)
+	setPlayerHudComponentVisible("vehicle_name", not customHUDEnabled)
+	setPlayerHudComponentVisible("area_name", not customHUDEnabled)
 end
 
 addCommandHandler("customhud", enableCustomHUD)
@@ -101,6 +104,53 @@ addEventHandler("onClientRender", root, function()
 			Width-250, Positions[2]+56, Width-130, Positions[2]+56+40, _, 1, font, "center", "center", true)
 	end
 
+
+
+	if localPlayer.inVehicle then
+		--Car Health
+		CarHP = localPlayer.vehicle.health or 1000
+		if CarHP > 1000 then CarHP = 1000 end
+		dxDrawImage(10, Height-62, 330, 54, "Elements/vehicle/vehicle.png")
+		dxDrawImage(10, Height-62, 330, 54, "Elements/vehicle/carhpbar.png")
+		dxDrawText(getVehicleName(localPlayer.vehicle), 62, Height-67, 330, Height-27, _, 1, font, "left", "center", true)
+		dxDrawImageSection(
+			57, Height-32, CarHP*0.24, 3, 
+			0, 0, CarHP*0.24, 3, 
+			"Elements/vehicle/carhp.png",
+			0, 0, 0,
+			tocolor(255, 80, 80))
+
+		--Nitro
+		local nitro = getVehicleNitroLevel(localPlayer.vehicle)
+		if nitro and nitro > 0 then
+			dxDrawImage(10, Height-62, 330, 54, "Elements/vehicle/nitrobar.png")
+			dxDrawImageSection(
+				51, Height-23, nitro*115, 3, 
+				0, 0, nitro*115, 3, 
+				"Elements/vehicle/nitro.png",
+				0, 0, 0,
+				tocolor(70, 70, 220))
+		end
+
+
+		--Speedometr
+		local speed = around(getElementSpeed(localPlayer.vehicle), 0)
+
+		dxDrawImage(300, Height-53, 120, 40, "Elements/panel.png")
+		dxDrawText(speed.." KM/H", 300, Height-53, 420, Height-13, _, 1, font, "center", "center", true)
+
+		if speed > 120 then speed = 120 end
+		CarpPos[2] = speed*(19/120)
+		CarpPos[1] = 18+(19-CarpPos[2])
+		dxDrawImage(CarpPos[1], (Height-72)+CarpPos[1], 2*CarpPos[2], 2*CarpPos[2], "Elements/ammoround.png")
+
+	end
+	
+	--Location
+	local x, y, z = getElementPosition(localPlayer or localPlayer.vehicle)
+	dxDrawText(getZoneName(x, y, z, true), Width-300, Height-63, Width-2, Height-43, _, 1, font, "right", "center", true)
+	dxDrawText(getZoneName(x, y, z), Width-300, Height-43, Width-2, Height-23, _, 1, font, "right", "center", true)
+
 end)
 
 function isElInWater(player) return (player.inVehicle == true and player.vehicle or player).inWater end
@@ -137,4 +187,17 @@ function isPlayerAmmoWeapon(player)
 			then return true
 	else return false end
 	 
+end
+
+function getElementSpeed(element, k)
+	local speedx, speedy, speedz = getElementVelocity(element)
+	local actualspeed = (speedx^2 + speedy^2 + speedz^2)^(0.5) 
+	if k == "kmh" or k == nil or k == 1 then return around(actualspeed * 180, 5)
+	elseif k == "mps" or k == 2 then return around(actualspeed * 50, 5)
+	elseif k == "mph" or k == 3 then return around(actualspeed * 111.847, 5) end
+end
+
+function around(fst, snd)
+     local mid = math.pow(10,snd)
+     return math.floor((fst*mid)+0.5)/mid
 end
