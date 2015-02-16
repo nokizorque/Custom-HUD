@@ -1,0 +1,26 @@
+<meta> 
+	<info author="TrezeLurese" name="Custom HUD" version="0" type="script"/>
+
+    <script src="main.lua" type="client"/>
+
+    <file src="Elements/armorbar.png"/>
+    <file src="Elements/armour.png"/>
+
+    <file src="Elements/healthbar.png"/>
+    <file src="Elements/health.png"/>
+
+    <file src="Elements/oxybar.png"/>
+    <file src="Elements/oxygen.png"/>
+
+    <file src="Elements/round.png"/>
+
+    <file src="Elements/weapons.png"/>
+    <file src="Elements/weaps.png"/>
+
+    <file src="Elements/ammoround.png"/>
+    <file src="Elements/panel.png"/>
+
+    <file src="opensanslight.ttf"/>
+
+    <oop>true</oop>
+</meta>
