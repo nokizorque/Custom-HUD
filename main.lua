@@ -14,10 +14,13 @@ local R, G, B = 0, 177, 37
 
 local AmmoPos = {8, 19}
 local CarpPos = {18, 19}
+local WantedPos = {8, 19}
 
 local font = dxCreateFont("opensanslight.ttf", 12)
 
 local customHUDEnabled = false
+
+local switchingRadio = false
 
 function enableCustomHUD()
 	customHUDEnabled = not customHUDEnabled
@@ -30,12 +33,16 @@ function enableCustomHUD()
 	setPlayerHudComponentVisible("weapon", not customHUDEnabled)
 	setPlayerHudComponentVisible("vehicle_name", not customHUDEnabled)
 	setPlayerHudComponentVisible("area_name", not customHUDEnabled)
+	setPlayerHudComponentVisible("radio", not customHUDEnabled)
+	setPlayerHudComponentVisible("wanted", not customHUDEnabled)
+	--setPlayerHudComponentVisible("radar", not customHUDEnabled)
 end
 
 addCommandHandler("customhud", enableCustomHUD)
 enableCustomHUD()
 
 addEventHandler("onClientRender", root, function()
+
 	if not customHUDEnabled then return false end
 	Health, Armour, Oxygen = localPlayer.health, localPlayer.armor, localPlayer.oxygenLevel
 	if Health > 100 then Health = 100 end
@@ -144,13 +151,55 @@ addEventHandler("onClientRender", root, function()
 		CarpPos[1] = 18+(19-CarpPos[2])
 		dxDrawImage(CarpPos[1], (Height-72)+CarpPos[1], 2*CarpPos[2], 2*CarpPos[2], "Elements/ammoround.png")
 
+		--Radio
+		if switchingRadio then
+			dxDrawImage(420, Height-53, 160, 40, "Elements/vehicle/rpanel.png")
+			dxDrawText(getRadioChannelName(getRadioChannel()), 420, Height-53, 580, Height-13, _, 1, font, "center", "center", true)
+		end
+
 	end
 	
 	--Location
 	local x, y, z = getElementPosition(localPlayer or localPlayer.vehicle)
-	dxDrawText(getZoneName(x, y, z, true), Width-300, Height-63, Width-2, Height-43, _, 1, font, "right", "center", true)
-	dxDrawText(getZoneName(x, y, z), Width-300, Height-43, Width-2, Height-23, _, 1, font, "right", "center", true)
+	dxDrawText(getZoneName(x, y, z, true), Width-310, Positions[2]+56+50, Width-10, Positions[2]+56+50+20, _, 1, font, "right", "center", true)
+	if getZoneName(x, y, z, true) ~= getZoneName(x, y, z) then 
+		dxDrawText(getZoneName(x, y, z), Width-310, Positions[2]+56+50+20, Width-10, Positions[2]+56+50+40, _, 1, font, "right", "center", true)
+	end
 
+
+	--Wanted Level
+	if localPlayer:getWantedLevel() > 0 then
+		WantedPos[2] = localPlayer:getWantedLevel() * (19/6)
+		WantedPos[1] = 8+(19-WantedPos[2])
+		dxDrawImage(Positions[1]+WantedPos[1]+276, Height-62+WantedPos[1], 2*WantedPos[2], 2*WantedPos[2], "Elements/ammoround.png")
+		dxDrawImage(Positions[1], Height-62, 330, 54, "Elements/round.png")
+		dxDrawText(localPlayer:getWantedLevel(), Positions[1], Height-62, Positions[1]+280, Height-62+38+15, _, 1, font, "right", "center", true)
+
+	end
+
+
+
+
+	--radar
+	--Долго буду ебаться с этой хуйнёй, хотя уже заебался
+	--[[local AR, AG, AB = getPlayerNametagColor(localPlayer)
+	dxDrawImage(Width-250, Height-250, 190, 190, "Elements/radar/radar.png")
+	dxDrawImage(Width-250, Height-250, 190, 190, "Elements/radar/blip.png", 0, 0, 0, tocolor(AR, AG, AB))
+	for _, v in ipairs(getElementsByType("vehicle")) do
+		if v == localPlayer then return false end
+		local r = getDistanceBetweenPoints2D(localPlayer.position.x, localPlayer.position.y, v.position.x, v.position.y)
+		if r > radius then
+
+		end
+	end]]
+
+end)
+
+local timer = nil
+addEventHandler("onClientPlayerRadioSwitch", localPlayer, function()
+	if isTimer(timer) then killTimer(timer) end
+	switchingRadio = true
+	timer = setTimer(function()	switchingRadio = false end, 1000, 1)
 end)
 
 function isElInWater(player) return (player.inVehicle == true and player.vehicle or player).inWater end
@@ -201,3 +250,4 @@ function around(fst, snd)
      local mid = math.pow(10,snd)
      return math.floor((fst*mid)+0.5)/mid
 end
+

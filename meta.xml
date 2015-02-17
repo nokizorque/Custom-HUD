@@ -1,5 +1,5 @@
 <meta> 
-	<info author="TrezeLurese" name="Custom HUD" version="0" type="script"/>
+	<info author="TrezeLurese" name="Custom HUD" version="3" type="script"/>
 
     <script src="main.lua" type="client"/>
 
@@ -30,6 +30,10 @@
 
     <file src="Elements/vehicle/carhpbar.png"/>
     <file src="Elements/vehicle/carhp.png"/>
+
+    <file src="Elements/vehicle/rpanel.png"/>
+
+
 
     <file src="opensanslight.ttf"/>
 
