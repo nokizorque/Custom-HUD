@@ -15,29 +15,17 @@ local R, G, B = 0, 177, 37
 local AmmoPos = {8, 19}
 local CarpPos = {18, 19}
 local WantedPos = {8, 19}
-
 local font = dxCreateFont("opensanslight.ttf", 12)
-
 local customHUDEnabled = false
-
 local switchingRadio = false
+local disabledHUDElements = {"ammo", "health", "armour", "breath", "clock", "money", "weapon", "vehicle_name", "area_name", "radio", "wanted"}
 
 function enableCustomHUD()
 	customHUDEnabled = not customHUDEnabled
-	setPlayerHudComponentVisible("ammo", not customHUDEnabled)
-	setPlayerHudComponentVisible("health", not customHUDEnabled)
-	setPlayerHudComponentVisible("armour", not customHUDEnabled)
-	setPlayerHudComponentVisible("breath", not customHUDEnabled)
-	setPlayerHudComponentVisible("clock", not customHUDEnabled)	
-	setPlayerHudComponentVisible("money", not customHUDEnabled)
-	setPlayerHudComponentVisible("weapon", not customHUDEnabled)
-	setPlayerHudComponentVisible("vehicle_name", not customHUDEnabled)
-	setPlayerHudComponentVisible("area_name", not customHUDEnabled)
-	setPlayerHudComponentVisible("radio", not customHUDEnabled)
-	setPlayerHudComponentVisible("wanted", not customHUDEnabled)
-	--setPlayerHudComponentVisible("radar", not customHUDEnabled)
+	for _, v in pairs(disabledHUDElements) do
+		setPlayerHudComponentVisible(v, not customHUDEnabled)
+	end
 end
-
 addCommandHandler("customhud", enableCustomHUD)
 enableCustomHUD()
 
@@ -225,17 +213,17 @@ function getPedWeaponSkill(player, id)
 	else return "std" end
 end
 
---local ammweaps = {16, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 41, 42, 43}
+--local validWeps = {16, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 41, 42, 43}
 function isPlayerAmmoWeapon(player)
 	local w = getPedWeapon(player)
-
 	if w == 16 or w == 17 or w == 18 or w == 22 or w == 23 or 
 		w == 24 or w == 25 or w == 26 or w == 27 or w == 28 or w == 29 or
 		w == 30 or w == 31 or w == 32 or w == 33 or w == 34 or w == 35 or 
-		w == 36 or w == 37 or w == 39 or w == 41 or w == 42 or w == 43 
-			then return true
-	else return false end
-	 
+		w == 36 or w == 37 or w == 39 or w == 41 or w == 42 or w == 43 then 
+			return true
+	else 
+		return false 
+	end
 end
 
 function getElementSpeed(element, k)
@@ -250,4 +238,3 @@ function around(fst, snd)
      local mid = math.pow(10,snd)
      return math.floor((fst*mid)+0.5)/mid
 end
-
